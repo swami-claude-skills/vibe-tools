@@ -1,0 +1,15 @@
+This is Swami's Vibe Tools, a library of free browser tools for 3D printing, CNC, and design. Every tool runs right in your web browser, with no account and nothing to install.
+
+Section one, Dashboard Summary. An overview of the page and a table of every section, with what each covers and when to use it.
+
+Section two, Search. Type a few words to find anything on the page, in any order and with small typos forgiven, narrow the results with filters, and click a result to jump to it.
+
+Section three, Tool Library, open from here. The table of tools, with what each one does, what's new, the date it was last updated, and an Open tool link. Right now it holds the Image to Relief Generator, which turns a render, photo, or height map into a smooth 3D relief for CNC carving, with a 3D viewer, a toolpath preview, and exports.
+
+Section four, Using the Tools. Which browsers work, how saved files land in your Downloads folder, and what to try if a 3D view stays blank.
+
+Section five, Updates and Versions, explained. Tool links never change, so a bookmark always opens the newest version. Each tool shows its version date, and this section tells you how to report a problem.
+
+Section six, Mind Map. The whole page as bubbles you can open, hover for a summary, and click to jump to that spot.
+
+Section seven, Glossary. Terms like height map, mesh, and toolpath, each with a short definition and links to where it's used.

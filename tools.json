@@ -1,0 +1,20 @@
+{
+  "library": {
+    "title": "Swami's Vibe Tools",
+    "built": "Thu Nov 12, 2026"
+  },
+  "groups": [
+    { "name": "3D relief & CNC", "color": "#38dafa" }
+  ],
+  "tools": [
+    {
+      "id": "relief-generator",
+      "name": "Image to Relief Generator",
+      "group": "3D relief & CNC",
+      "path": "relief-generator/",
+      "summary": "Turns a render, photo, height map, or multi-view sheet into a smooth 3D relief for CNC carving, with a live 3D viewer, toolpath preview, tool-reach check, and STL, OBJ, height-map, outline, and contour exports.",
+      "whats_new": "First public copy. Exports download in any browser, no Claude account needed.",
+      "updated": "Thu Nov 12, 2026"
+    }
+  ]
+}
