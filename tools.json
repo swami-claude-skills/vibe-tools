@@ -13,7 +13,7 @@
       "group": "3D relief & CNC",
       "path": "relief-generator/",
       "summary": "Turns a render, photo, height map, or multi-view sheet into a smooth 3D relief for CNC carving, with a live 3D viewer, toolpath preview, tool-reach check, and STL, OBJ, height-map, outline, and contour exports.",
-      "whats_new": "Exports now always use your browser's normal download, and leftover Claude-only code was removed.",
+      "whats_new": "New guidance on true heightmaps vs shaded images: how to tell them apart and how to get a good heightmap. Exports always use your browser's normal download.",
       "updated": "Thu Nov 12, 2026"
     }
   ]

@@ -1193,7 +1193,7 @@
             <tr><td><span class="secnum">05</span></td><td><strong>Settings Reference</strong></td><td class="sec-cat"></td><td>Every setting with its default and a tip</td><td>A setting is unclear</td></tr>
             <tr><td><span class="secnum">06</span></td><td><strong>How the Model Is Built</strong></td><td class="sec-cat"></td><td>The pipeline from image to watertight mesh</td><td>Understanding why it looks the way it does</td></tr>
             <tr><td><span class="secnum">07</span></td><td><strong>CNC Workflow</strong></td><td class="sec-cat"></td><td>Roughing, finishing, profile cut, stepovers, importing</td><td>Programming the job</td></tr>
-            <tr><td><span class="secnum">08</span></td><td><strong>Getting a Good Source Image</strong></td><td class="sec-cat"></td><td>What makes an image carve well, and a prompt idea</td><td>Preparing or generating a source image</td></tr>
+            <tr><td><span class="secnum">08</span></td><td><strong>Getting a Good Source Image</strong></td><td class="sec-cat"></td><td>Heightmaps vs shaded images, what carves well, and a prompt idea</td><td>Preparing or generating a source image</td></tr>
             <tr><td><span class="secnum">09</span></td><td><strong>Limitations and Cautions</strong></td><td class="sec-cat"></td><td>What the method can’t do</td><td>Before trusting a result</td></tr>
             <!-- one row per remaining section -->
             <!-- REQUIRED: always include the Source Document (Verbatim) row.
@@ -1438,8 +1438,39 @@
   <div class="section cat-guidance" data-title="Getting a Good Source Image" data-cat="guidance">
     <div class="sec-head"><span class="sec-num">08</span><span class="sec-title">Getting a Good Source Image</span><span class="cat-badge">GUIDANCE</span><span class="chevron">▶</span></div>
     <div class="sec-body">
-      <p>The model can only be as good as the brightness in the image. The best sources look like a sculpted relief already.</p>
-      <ul data-mm-label="Good sources">
+      <p>The page takes two kinds of image, and they work very differently. A <strong>true heightmap</strong> stores height directly: each gray value is a depth, so the model comes out exactly as drawn. A <strong>shaded image</strong> (a render, photo or drawing) only shows how light falls on a shape, so the page has to guess the height, and shadows, paint and highlights can fool it. Use a heightmap whenever you can find or make one.</p>
+      <div class="table-wrap" data-desc="Heightmap or shaded image?">
+        <table>
+          <thead><tr><th>Topic</th><th>True heightmap</th><th>Shaded image</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tid">What it shows</span></td><td>Height as gray: black is the lowest point (or cut away), white is the highest</td><td>Light and shadow on a surface, as a camera or renderer sees it</td></tr>
+            <tr><td><span class="tid">How it looks</span></td><td>Soft and flat-looking, with no light direction, no cast shadows and no shine</td><td>Looks 3D: one side of each shape is lit and the other side is dark</td></tr>
+            <tr><td><span class="tid">Where it comes from</span></td><td>Relief or CAM software (Vectric Aspire, Carveco), a 3D program’s depth or displacement pass, depth-map AI tools, or this page’s own Heightmap export</td><td>AI image generators, 3D renders, photos of carvings, drawings</td></tr>
+            <tr><td><span class="tid">What the page does</span></td><td>Reads the gray exactly (all 65,536 levels of a 16-bit PNG) and maps black and white to the slab and full relief depth</td><td>Estimates height from brightness with a blend of blurs: a best guess, not a measurement</td></tr>
+            <tr><td><span class="tid">Accuracy</span></td><td>Exact: what you see is what you carve</td><td>Approximate: check it in 3D Model Viewer and tune the Height settings</td></tr>
+            <tr><td><span class="tid">Best file</span></td><td>16-bit grayscale PNG; 8-bit works with light de-step smoothing</td><td>PNG or a good-quality JPG, about 1000 px across or more</td></tr>
+            <tr><td><span class="tid">Image is setting</span></td><td>a heightmap (gray = height)</td><td>a render or photo (shading)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Which kind do I have?</strong> Five quick checks:</p>
+      <ul data-mm-label="Which kind do I have?">
+        <li><span class="tid">Light direction</span>If one side of every letter or shape is bright and the other side dark, the image is shaded. A heightmap looks the same from every side.</li>
+        <li><span class="tid">Flat tops</span>On a heightmap, a flat raised area is one even gray. On a shaded image its brightness changes with the light.</li>
+        <li><span class="tid">Colour</span>Heightmaps are grayscale. Colour means a shaded image or paint. A purple and blue <em>normal map</em> is not a heightmap and won’t work here.</li>
+        <li><span class="tid">File name</span>Names with height, depth, displacement or bump are usually heightmaps; auto-detect looks for them.</li>
+        <li><span class="tid">Quick test</span>Set <em>Image is</em> to heightmap. If the model comes out tilted, with every shape sloping toward one side, the image is shaded.</li>
+      </ul>
+      <p><strong>Getting a good heightmap:</strong></p>
+      <ul data-mm-label="Good heightmaps">
+        <li><span class="tid">16-bit if you can</span>An 8-bit map has only 256 levels, which can show as steps on a deep relief. De-step smoothing hides most of them.</li>
+        <li><span class="tid">Black outside</span>Pure black around the part becomes cut-out (the <em>Cut-out below</em> setting), so the outline comes from the map itself.</li>
+        <li><span class="tid">Full range</span>Black to white gives the full relief depth. If the map uses only part of the range, turn on Stretch to full depth.</li>
+        <li><span class="tid">Set the depth</span>A heightmap has no units. Set Relief depth to the depth it was made for. Maps exported from this page remember their size and Z range.</li>
+        <li><span class="tid">No baked light</span>A gray render with shadows or ambient occlusion is still a shaded image, even if it looks gray.</li>
+      </ul>
+      <p><strong>If you only have a shaded image,</strong> the model can only be as good as the brightness in it. The best ones look like a sculpted relief already.</p>
+      <ul data-mm-label="Good shaded sources">
         <li><span class="tid">Even grey</span>A single material colour (grey, clay, bone) with no painted colours: brightness then means shape, not paint.</li>
         <li><span class="tid">Soft light</span>Light from the front or slightly above, with no hard cast shadows. Shadows read as holes.</li>
         <li><span class="tid">Plain background</span>Black, white or transparent behind the sign, so the outline separates cleanly.</li>
@@ -1506,7 +1537,7 @@
         <table>
           <thead><tr><th>Term</th><th>Topic</th><th>Definition</th><th>Appears in</th><th>Qty</th></tr></thead>
           <tbody>
-            <tr data-gterm="heightmap" data-match="heightmaps?|height field|height grid" data-code=""><td><strong>Heightmap</strong></td><td><span class="tid" style="--tc:#38dafa">Height</span></td><td>A grid or grayscale image where each value is a height.</td><td class="gloss-uses"></td><td class="gloss-count"></td></tr>
+            <tr data-gterm="heightmap" data-match="heightmaps?|height maps?|height field|height grid|depth maps?|displacement maps?" data-code=""><td><strong>Heightmap</strong></td><td><span class="tid" style="--tc:#38dafa">Height</span></td><td>A grid or grayscale image where each value is a height.</td><td class="gloss-uses"></td><td class="gloss-count"></td></tr>
             <tr data-gterm="relief" data-match="reliefs?" data-code=""><td><strong>Relief</strong></td><td><span class="tid" style="--tc:#38dafa">Height</span></td><td>A carving raised from a flat background, viewed from the front.</td><td class="gloss-uses"></td><td class="gloss-count"></td></tr>
             <tr data-gterm="front" data-match="front views?" data-code=""><td><strong>Front view</strong></td><td><span class="tid" style="--tc:#38fa79">Images</span></td><td>The straight-on view of the sign; it alone builds the model.</td><td class="gloss-uses"></td><td class="gloss-count"></td></tr>
             <tr data-gterm="multiview" data-match="multi-view|composite" data-code=""><td><strong>Multi-view sheet</strong></td><td><span class="tid" style="--tc:#38fa79">Images</span></td><td>One image holding several views of an object, such as front, top, right and isometric.</td><td class="gloss-uses"></td><td class="gloss-count"></td></tr>
