@@ -13,7 +13,7 @@
       "group": "3D relief & CNC",
       "path": "relief-generator/",
       "summary": "Turns a render, photo, height map, or multi-view sheet into a smooth 3D relief for CNC carving, with a live 3D viewer, toolpath preview, tool-reach check, and STL, OBJ, height-map, outline, and contour exports.",
-      "whats_new": "Flat backgrounds stay flat: the blurs now stop at letter edges, so letters no longer puff up the background between them (new Stop blur at edges setting). Also new: heightmap vs shaded image guidance, with the audio overview updated to match.",
+      "whats_new": "Flat backgrounds stay flat: the blurs now stop at letter edges, so letters no longer puff up the background between them (new Stop blur at edges setting). Also new: heightmap vs shaded image guidance, with the audio overview updated to cover both.",
       "updated": "Thu Nov 12, 2026"
     }
   ]
