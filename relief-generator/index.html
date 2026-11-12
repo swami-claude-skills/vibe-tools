@@ -1453,7 +1453,7 @@
           </tbody>
         </table>
       </div>
-      <p><strong>Which kind do I have?</strong> Five quick checks:</p>
+      <div class="subsec" data-tag="check" data-desc="Which kind do I have? Five quick checks" data-mm-tip="Light direction, flat tops, colour, file name, and a quick test with Image is set to heightmap.">
       <ul data-mm-label="Which kind do I have?">
         <li><span class="tid">Light direction</span>If one side of every letter or shape is bright and the other side dark, the image is shaded. A heightmap looks the same from every side.</li>
         <li><span class="tid">Flat tops</span>On a heightmap, a flat raised area is one even gray. On a shaded image its brightness changes with the light.</li>
@@ -1461,7 +1461,8 @@
         <li><span class="tid">File name</span>Names with height, depth, displacement or bump are usually heightmaps; auto-detect looks for them.</li>
         <li><span class="tid">Quick test</span>Set <em>Image is</em> to heightmap. If the model comes out tilted, with every shape sloping toward one side, the image is shaded.</li>
       </ul>
-      <p><strong>Getting a good heightmap:</strong></p>
+      </div>
+      <div class="subsec" data-tag="heightmap" data-desc="Getting a good heightmap" data-mm-tip="16-bit if you can, black outside the part, the full gray range, the right relief depth, and no baked-in light.">
       <ul data-mm-label="Good heightmaps">
         <li><span class="tid">16-bit if you can</span>An 8-bit map has only 256 levels, which can show as steps on a deep relief. De-step smoothing hides most of them.</li>
         <li><span class="tid">Black outside</span>Pure black around the part becomes cut-out (the <em>Cut-out below</em> setting), so the outline comes from the map itself.</li>
@@ -1469,7 +1470,9 @@
         <li><span class="tid">Set the depth</span>A heightmap has no units. Set Relief depth to the depth it was made for. Maps exported from this page remember their size and Z range.</li>
         <li><span class="tid">No baked light</span>A gray render with shadows or ambient occlusion is still a shaded image, even if it looks gray.</li>
       </ul>
-      <p><strong>If you only have a shaded image,</strong> the model can only be as good as the brightness in it. The best ones look like a sculpted relief already.</p>
+      </div>
+      <div class="subsec" data-tag="shaded" data-desc="If you only have a shaded image" data-mm-tip="Even grey, soft light, a plain background, straight on, enough resolution, and multi-view sheets.">
+      <p>The model can only be as good as the brightness in the image. The best shaded images look like a sculpted relief already.</p>
       <ul data-mm-label="Good shaded sources">
         <li><span class="tid">Even grey</span>A single material colour (grey, clay, bone) with no painted colours: brightness then means shape, not paint.</li>
         <li><span class="tid">Soft light</span>Light from the front or slightly above, with no hard cast shadows. Shadows read as holes.</li>
@@ -1478,6 +1481,7 @@
         <li><span class="tid">Resolution</span>At least as many pixels across as grid points (about 1000 for a 610 mm sign at 0.6 mm).</li>
         <li><span class="tid">Multi-view sheets</span>Front, top, right and isometric panels on black, like the sample. The top and right views let the page estimate the thickness.</li>
       </ul>
+      </div>
       <div class="callout"><span class="lbl">Prompt idea for an AI image</span>“Orthographic front view of a carved wooden relief sign, uniform light grey clay material, soft frontal lighting, no cast shadows, pure black background, high detail, no perspective.” Add the text and motifs you want.</div>
     </div>
   </div>
