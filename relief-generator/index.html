@@ -1359,6 +1359,7 @@
             <tr><td><strong>Broad forms</strong></td><td><span class="tid" style="--tc:#dafa38">Height</span></td><td>45% at 6 mm</td><td>Weight and blur of the large, smooth shapes</td><td>More = softer, more sculpted</td></tr>
             <tr><td><strong>Medium features</strong></td><td><span class="tid" style="--tc:#dafa38">Height</span></td><td>35% at 1.8 mm</td><td>Weight and blur of letters and figures</td><td>—</td></tr>
             <tr><td><strong>Fine detail</strong></td><td><span class="tid" style="--tc:#dafa38">Height</span></td><td>20% at 0.5 mm</td><td>Weight and blur of texture and small edges</td><td>More = sharper but noisier</td></tr>
+            <tr><td><strong>Stop blur at edges</strong></td><td><span class="tid" style="--tc:#dafa38">Height</span></td><td>normal</td><td>Keeps the broad and medium blurs inside each shape, so letters don’t puff up the flat background between them</td><td>Off gives the older, softer look with raised halos around letters</td></tr>
             <tr><td><strong>Percentiles</strong></td><td><span class="tid" style="--tc:#dafa38">Height</span></td><td>1% · 99.5%</td><td>Heights below the low one sit on the slab; above the high one reach full depth</td><td>Lower the high one if highlights flatten the rest</td></tr>
             <tr><td><strong>Gamma</strong></td><td><span class="tid" style="--tc:#dafa38">Height</span></td><td>1</td><td>Above 1 crisper peaks; below 1 fuller, rounder forms</td><td>—</td></tr>
             <tr><td><strong>Terraces</strong></td><td><span class="tid" style="--tc:#dafa38">Height</span></td><td>0 (smooth)</td><td>Flat levels for 2.5D or layered carving</td><td>3–6 levels for logos</td></tr>
@@ -1387,7 +1388,7 @@
             <tr><td><strong>2</strong></td><td><span class="tid">Silhouette</span></td><td>Background colour is read from the crop border. Pixels that differ enough become the sign; the largest connected piece is kept, holes are filled, and a small opening removes whiskers.</td></tr>
             <tr><td><strong>3</strong></td><td><span class="tid">Resample</span></td><td>The sign’s bounding box is resampled with high-quality (bicubic-style) smoothing to the grid: sign width ÷ grid spacing points across.</td></tr>
             <tr><td><strong>4</strong></td><td><span class="tid">Height</span></td><td>Brightness (or a chosen channel) becomes raw height, kept in 32-bit float. Optional lighting correction subtracts a wide blur.</td></tr>
-            <tr><td><strong>5</strong></td><td><span class="tid">Blend</span></td><td>Three Gaussian-blurred copies — broad, medium and fine — are blended by weight: a weighted band-pass that gives big shapes smooth slopes.</td></tr>
+            <tr><td><strong>5</strong></td><td><span class="tid">Blend</span></td><td>Three blurred copies — broad, medium and fine — are blended by weight: a weighted band-pass that gives big shapes smooth slopes. The broad and medium blurs are edge-aware (a domain-transform filter): they smooth inside each shape but stop at strong edges, so a bright letter can’t raise the flat background beside it.</td></tr>
             <tr><td><strong>6</strong></td><td><span class="tid">Normalize</span></td><td>Heights inside the sign are mapped from the low to the high percentile onto 0–1, then gamma and terraces are applied.</td></tr>
             <tr><td><strong>7</strong></td><td><span class="tid">Roll-off</span></td><td>A Euclidean distance transform from the outline rounds the edge with a sine shoulder down to the slab.</td></tr>
             <tr><td><strong>8</strong></td><td><span class="tid">Tool reach</span></td><td>A drop-cutter pass with the finishing ball, then the ball’s envelope, gives what the tool can actually leave; the difference is the Tool reach map, or it replaces the model.</td></tr>
@@ -1549,7 +1550,8 @@
             <tr data-gterm="multiview" data-match="multi-view|composite" data-code=""><td><strong>Multi-view sheet</strong></td><td><span class="tid" style="--tc:#38fa79">Images</span></td><td>One image holding several views of an object, such as front, top, right and isometric.</td><td class="gloss-uses"></td><td class="gloss-count"></td></tr>
             <tr data-gterm="silhouette" data-match="silhouette" data-code=""><td><strong>Silhouette</strong></td><td><span class="tid" style="--tc:#38fa79">Images</span></td><td>The outline of the sign separated from its background.</td><td class="gloss-uses"></td><td class="gloss-count"></td></tr>
             <tr data-gterm="bicubic" data-match="bicubic" data-code=""><td><strong>Bicubic resampling</strong></td><td><span class="tid" style="--tc:#38fa79">Images</span></td><td>Resizing that fits smooth curves between pixels, so slopes stay continuous.</td><td class="gloss-uses"></td><td class="gloss-count"></td></tr>
-            <tr data-gterm="gaussian" data-match="Gaussian" data-code=""><td><strong>Gaussian blur</strong></td><td><span class="tid" style="--tc:#38dafa">Height</span></td><td>A smoothing filter that averages each point with its neighbours by a bell curve; σ is its width.</td><td class="gloss-uses"></td><td class="gloss-count"></td></tr>
+            <tr data-gterm="gaussian" data-match="Gaussian|plain blur" data-code=""><td><strong>Gaussian blur</strong></td><td><span class="tid" style="--tc:#38dafa">Height</span></td><td>A smoothing filter that averages each point with its neighbours by a bell curve; σ is its width.</td><td class="gloss-uses"></td><td class="gloss-count"></td></tr>
+            <tr data-gterm="edgeaware" data-match="edge-aware" data-code=""><td><strong>Edge-aware blur</strong></td><td><span class="tid" style="--tc:#38dafa">Height</span></td><td>A blur that smooths inside each shape but stops at strong brightness edges, so one shape’s height doesn’t spread into its neighbour.</td><td class="gloss-uses"></td><td class="gloss-count"></td></tr>
             <tr data-gterm="bandpass" data-match="band-pass" data-code=""><td><strong>Band-pass</strong></td><td><span class="tid" style="--tc:#38dafa">Height</span></td><td>Weighting some feature sizes over others; here, broad shapes over fine noise.</td><td class="gloss-uses"></td><td class="gloss-count"></td></tr>
             <tr data-gterm="percentile" data-match="percentiles?" data-code=""><td><strong>Percentile</strong></td><td><span class="tid" style="--tc:#38dafa">Height</span></td><td>The value below which a given share of the points fall; used to ignore a few extreme highlights.</td><td class="gloss-uses"></td><td class="gloss-count"></td></tr>
             <tr data-gterm="gamma" data-match="gamma" data-code=""><td><strong>Gamma</strong></td><td><span class="tid" style="--tc:#38dafa">Height</span></td><td>A curve applied to heights: above 1 deepens the mid-tones, below 1 lifts them.</td><td class="gloss-uses"></td><td class="gloss-count"></td></tr>
@@ -3855,6 +3857,23 @@ function rgCore() {
       for (let t = -r; t <= r; t++) { const yy = y + t; v += k[t + r] * tmp[(yy < 0 ? 0 : yy >= h ? h - 1 : yy) * w + x]; } out[y * w + x] = v; }
     return out;
   }
+  // edge-aware blur (domain transform, recursive filter; Gastal & Oliveira 2011): smooths like a Gaussian of σ = sig cells,
+  // but stops at strong brightness edges in the guide G, so bright letters can't raise the flat background around them
+  function dtBlur(a, G, w, h, sig, sr, N) {
+    if (!(sig > 0.25)) return Float32Array.from(a);
+    N = N || 3; const n = w * h, k = sig / sr, Dx = new Float32Array(n), Dy = new Float32Array(n), J = Float32Array.from(a);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = y * w + x;
+      Dx[i] = x ? 1 + k * Math.abs(G[i] - G[i - 1]) : 1; Dy[i] = y ? 1 + k * Math.abs(G[i] - G[i - w]) : 1; }
+    for (let it = 0; it < N; it++) {
+      const sH = sig * Math.sqrt(3) * Math.pow(2, N - it - 1) / Math.sqrt(Math.pow(4, N) - 1), la = -Math.SQRT2 / sH;   // ln of the feedback coefficient
+      for (let y = 0; y < h; y++) { const o = y * w;
+        for (let x = 1; x < w; x++) { const i = o + x; J[i] += Math.exp(la * Dx[i]) * (J[i - 1] - J[i]); }
+        for (let x = w - 2; x >= 0; x--) { const i = o + x; J[i] += Math.exp(la * Dx[i + 1]) * (J[i + 1] - J[i]); } }
+      for (let x = 0; x < w; x++) {
+        for (let y = 1; y < h; y++) { const i = y * w + x; J[i] += Math.exp(la * Dy[i]) * (J[i - w] - J[i]); }
+        for (let y = h - 2; y >= 0; y--) { const i = y * w + x; J[i] += Math.exp(la * Dy[i + w]) * (J[i + w] - J[i]); } } }
+    return J;
+  }
   // exact Euclidean distance transform (Felzenszwalb–Huttenlocher): distance from each pixel with m=1 to the nearest m=0 pixel
   function edt(m, w, h) {
     const INF = 1e20, f = new Float64Array(Math.max(w, h)), d = new Float64Array(Math.max(w, h)), v = new Int32Array(Math.max(w, h)), z = new Float64Array(Math.max(w, h) + 1);
@@ -3899,7 +3918,7 @@ function rgCore() {
 
   /* ---------- the model ---------- */
   const DEFAULTS = { widthMM: 610, base: 12.7, rel: 25.4, margin: 6, dx: .6, bgMode: 'auto', thr: .16, open: 1, outline: 'cutout', frameW: 0, frameH: .5,
-    channel: 'luma', invert: false, light: 0, wB: .45, sB: 6, wM: .35, sM: 1.8, wF: .20, sF: .5, pLo: 1, pHi: 99.5, gamma: 1, roll: 2.5, terraces: 0,
+    channel: 'luma', invert: false, light: 0, wB: .45, sB: 6, wM: .35, sM: 1.8, wF: .20, sF: .5, edge: .15, pLo: 1, pHi: 99.5, gamma: 1, roll: 2.5, terraces: 0,
     reachDia: 1.5875, applyReach: false, mirror: false, negative: false,
     mode: 'auto', hLo: 0, hHi: 1, hStretch: false, hSmooth: -1, hCut: .002, hRoll: 0 };   // heightmap mode (hSmooth -1 = auto: more for 8-bit sources)
 
@@ -3954,8 +3973,10 @@ function rgCore() {
       for (let k = 0; k < n; k++) L[k] = L[k] - big[k] + mean; }
     const lowIn = pctl(L, sign, s.pLo); for (let k = 0; k < n; k++) if (!sign[k]) L[k] = lowIn;     // background can't pull edges up or down
     // 5. three-scale Gaussian blend (weighted band-pass): broad forms, medium features, fine detail
-    step('Blending three Gaussian scales…');
-    const wsum = (s.wB + s.wM + s.wF) || 1, hB = blur(L, gw, gh, s.sB / dx), hM = blur(L, gw, gh, s.sM / dx), hF = blur(L, gw, gh, s.sF / dx);
+    step('Blending three blur scales…');
+    // edge stop on: the broad and medium blurs stay inside each shape (guide = brightness lightly smoothed, so JPEG noise isn't an edge)
+    const eG = s.edge > 0 ? blur(L, gw, gh, 1 / dx) : null, sm = (sg) => eG ? dtBlur(L, eG, gw, gh, sg / dx, s.edge) : blur(L, gw, gh, sg / dx);
+    const wsum = (s.wB + s.wM + s.wF) || 1, hB = sm(s.sB), hM = sm(s.sM), hF = blur(L, gw, gh, s.sF / dx);
     hh = new Float32Array(n); for (let k = 0; k < n; k++) hh[k] = (s.wB * hB[k] + s.wM * hM[k] + s.wF * hF[k]) / wsum;
     // 6. robust normalisation inside the sign (percentiles), gamma, optional terraces
     const lo = pctl(hh, sign, s.pLo), hi = pctl(hh, sign, s.pHi), span = hi - lo || 1;
@@ -5332,6 +5353,7 @@ window.RG = (() => {
       ['sM', 'medium blur σ', 'num', { step: .1, min: .2, max: 20, unit: 'mm' }, 'Blur width for the medium features.'],
       ['wF', 'fine detail weight', 'rng', { min: 0, max: 1, step: .05, pct: true }, 'Share of the height from the lightly blurred copy: fur, needles, small edges. More looks sharper but also noisier.'],
       ['sF', 'fine blur σ', 'num', { step: .05, min: 0, max: 5, unit: 'mm' }, 'Blur width for the fine detail. Below about a quarter of the grid spacing it has no effect.'],
+      ['edge', 'stop blur at edges', 'sel', [[0, 'off (plain blur)'], [.4, 'gentle'], [.15, 'normal'], [.08, 'strong']], 'Keeps the broad and medium blurs inside each shape, so bright letters and figures don’t puff up the flat background between them. Off = the older plain blur: softer slopes, but raised halos around letters.'],
       ['pLo', 'low percentile', 'num', { step: .5, min: 0, max: 20, unit: '%' }, 'Heights below this percentile (inside the sign) all sit on the slab.'],
       ['pHi', 'high percentile', 'num', { step: .1, min: 80, max: 100, unit: '%' }, 'Heights above this percentile all reach full depth, so a few shiny highlights can’t squash the rest.'],
       ['gamma', 'gamma', 'rng', { min: .4, max: 2.5, step: .05 }, 'Above 1 pushes mid-heights down (crisper peaks); below 1 lifts them (fuller, rounder).'],
@@ -5371,7 +5393,7 @@ window.RG = (() => {
       if (c.type === 'num') c.val.innerHTML = (c.o.unit || '') + (c.o.inch ? ' <span class="rg-in">' + IN(k === 'heightMM' ? heightNow() : S[k]) + '</span>' : ''); }
     ctl.frameW.inp.closest('.rg-row').classList.toggle('mv-dim', S.outline !== 'rect'); ctl.frameH.inp.closest('.rg-row').classList.toggle('mv-dim', S.outline !== 'rect' || !S.frameW);
     const hm = curMode() === 'height', dim = (keys, on) => keys.forEach(k => ctl[k] && ctl[k].inp.closest('.rg-row').classList.toggle('mv-dim', on));
-    dim(['bgMode', 'thr', 'roll', 'channel', 'light', 'wB', 'sB', 'wM', 'sM', 'wF', 'sF', 'pLo', 'pHi'], hm); dim(['hLo', 'hHi', 'hStretch', 'hSmooth', 'hRoll'], !hm);
+    dim(['bgMode', 'thr', 'roll', 'channel', 'light', 'wB', 'sB', 'wM', 'sM', 'wF', 'sF', 'edge', 'pLo', 'pHi'], hm); dim(['hLo', 'hHi', 'hStretch', 'hSmooth', 'hRoll'], !hm);
     dim(['hLo', 'hHi'], !hm || S.hStretch); dim(['hCut'], !hm || S.outline === 'rect'); hmInfo();
     const sum = S.wB + S.wM + S.wF; $('#rgMix').textContent = sum ? 'mix: broad ' + Math.round(S.wB / sum * 100) + '% · medium ' + Math.round(S.wM / sum * 100) + '% · fine ' + Math.round(S.wF / sum * 100) + '%' : 'all three weights are 0';
   }
