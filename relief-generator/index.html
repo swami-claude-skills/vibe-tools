@@ -1261,9 +1261,10 @@
         <div id="rgSources"></div>
       </div>
       <div class="subsec" data-tag="views" data-desc="Views, crop and thickness" data-mm-tip="Pick which view is the front (the model), which are side or top views (thickness), drag a box to crop by hand, and apply the thickness the side views suggest.">
-        <p class="rg-hint">Each detected view gets a role. <strong>Front</strong> builds the model; <strong>side</strong> and <strong>top</strong> views only estimate the thickness. Click a dashed box (or a thumbnail) to make it the front, or drag a box on the image to crop by hand.</p>
+        <p class="rg-hint">Each detected view gets a role. <strong>Front</strong> builds the model; <strong>side</strong> and <strong>top</strong> views only estimate the thickness. Click a dashed box (or a thumbnail) to make it the front, or drag a box on the image to crop by hand. Switch to <strong>add a flatten box</strong> to mark areas that should be a flat floor (see Flatten floor under Height); click a pink box to remove it.</p>
         <div class="rg-srcbox"><canvas id="rgSrc" aria-label="Source image with the crop"></canvas></div>
         <div class="mv-row"><button type="button" class="mv-btn" id="rgAuto">auto (front view)</button><button type="button" class="mv-btn" id="rgWhole">whole image</button><span class="mv-stats" id="rgCropInfo"></span></div>
+        <div class="mv-row"><span class="mv-stats">drag on the image to</span><button type="button" class="mv-btn on" id="rgDragCrop">crop</button><button type="button" class="mv-btn" id="rgDragFlat">add a flatten box</button><button type="button" class="mv-btn" id="rgFlatClear">clear flatten boxes</button><span class="mv-stats" id="rgFlatInfo"></span></div>
         <div class="mv-stats" id="rgThick"></div>
       </div>
       <div class="subsec" data-tag="size" data-desc="Size, thickness and stock" data-mm-tip="Sign width and height, back slab, relief depth, stock margin, grid spacing, mirror and negative (mold)."><div class="rg-grid" data-rg="size"></div></div>
@@ -1362,6 +1363,8 @@
             <tr><td><strong>Percentiles</strong></td><td><span class="tid" style="--tc:#dafa38">Height</span></td><td>1% · 99.5%</td><td>Heights below the low one sit on the slab; above the high one reach full depth</td><td>Lower the high one if highlights flatten the rest</td></tr>
             <tr><td><strong>Gamma</strong></td><td><span class="tid" style="--tc:#dafa38">Height</span></td><td>1</td><td>Above 1 crisper peaks; below 1 fuller, rounder forms</td><td>—</td></tr>
             <tr><td><strong>Terraces</strong></td><td><span class="tid" style="--tc:#dafa38">Height</span></td><td>0 (smooth)</td><td>Flat levels for 2.5D or layered carving</td><td>3–6 levels for logos</td></tr>
+            <tr><td><strong>Flatten floor</strong></td><td><span class="tid" style="--tc:#dafa38">Height</span></td><td>off</td><td>Makes low areas one flat floor: everywhere, or only inside boxes you drag on the source image</td><td>Use boxes for a bubble between letters; everywhere also flattens darker detail</td></tr>
+            <tr><td><strong>Floor level</strong></td><td><span class="tid" style="--tc:#dafa38">Height</span></td><td>50%</td><td>Heights below this share of the relief depth count as floor. In a box they take the height found just outside it</td><td>Raise it until the bubble is gone; draw boxes tight around the gap</td></tr>
             <tr><td><strong>Black / white level</strong></td><td><span class="tid" style="--tc:#fa3899">Heightmap</span></td><td>0% / 100%</td><td>Gray values that map to the slab and to full relief depth</td><td>Leave at 0–100% for a heightmap made for this size</td></tr>
             <tr><td><strong>Stretch to full depth</strong></td><td><span class="tid" style="--tc:#fa3899">Heightmap</span></td><td>off</td><td>Maps the darkest and brightest gray inside the outline to slab and full depth</td><td>For maps that use only part of the gray range</td></tr>
             <tr><td><strong>De-step smoothing</strong></td><td><span class="tid" style="--tc:#fa3899">Heightmap</span></td><td>auto</td><td>Light blur inside the outline to remove 8-bit stair-steps</td><td>0.8 mm for 8-bit maps, little or none for 16-bit</td></tr>
@@ -1389,6 +1392,7 @@
             <tr><td><strong>4</strong></td><td><span class="tid">Height</span></td><td>Brightness (or a chosen channel) becomes raw height, kept in 32-bit float. Optional lighting correction subtracts a wide blur.</td></tr>
             <tr><td><strong>5</strong></td><td><span class="tid">Blend</span></td><td>Three Gaussian-blurred copies — broad, medium and fine — are blended by weight: a weighted band-pass that gives big shapes smooth slopes.</td></tr>
             <tr><td><strong>6</strong></td><td><span class="tid">Normalize</span></td><td>Heights inside the sign are mapped from the low to the high percentile onto 0–1, then gamma and terraces are applied.</td></tr>
+            <tr><td><strong>F</strong></td><td><span class="tid">Flat floor</span></td><td>Optional. Heights below the floor level are made flat: everywhere (raised to the level), or inside boxes drawn on the source image (set to the median low height just outside each box, blended in over about 1 mm). It removes the domes and moats that soft shadows in a render leave in a background that should be flat.</td></tr>
             <tr><td><strong>7</strong></td><td><span class="tid">Roll-off</span></td><td>A Euclidean distance transform from the outline rounds the edge with a sine shoulder down to the slab.</td></tr>
             <tr><td><strong>8</strong></td><td><span class="tid">Tool reach</span></td><td>A drop-cutter pass with the finishing ball, then the ball’s envelope, gives what the tool can actually leave; the difference is the Tool reach map, or it replaces the model.</td></tr>
             <tr><td><strong>H</strong></td><td><span class="tid">Heightmap mode</span></td><td>For a grayscale heightmap, steps 2–6 are replaced: the PNG is decoded exactly (all 65,536 levels of a 16-bit file, not the browser’s 8-bit copy), resampled bicubically, cut out where it is black, lightly smoothed only to remove 8-bit steps, and mapped linearly from the black and white levels to slab and full depth.</td></tr>
@@ -1492,6 +1496,7 @@
     <div class="sec-body">
       <ul data-mm-label="Cautions">
         <li><span class="tid">Depth accuracy</span>Height is estimated from shading, not measured. Undercuts and hidden sides can’t be recovered from a front view.</li>
+        <li><span class="tid">Soft shadows</span>AI renders darken the floor right next to raised letters and leave open gaps brighter, so a flat background can come out as a bubble between letters. No blur setting can tell that from a real dome. Use Flatten floor with a box over the spot, or a true heightmap.</li>
         <li><span class="tid">Painted colour</span>Dark paint on a raised letter makes it low. Use invert, a single channel, or a grey render.</li>
         <li><span class="tid">Outline steps</span>The outline follows the grid, a staircase as fine as the grid spacing. The exported outline splines are smoothed; use them for the profile cut.</li>
         <li><span class="tid">Browser memory</span>Grids are capped near 2.2 million points. Very large signs get a coarser grid automatically; exports at full detail can be tens of megabytes.</li>
@@ -3899,7 +3904,7 @@ function rgCore() {
 
   /* ---------- the model ---------- */
   const DEFAULTS = { widthMM: 610, base: 12.7, rel: 25.4, margin: 6, dx: .6, bgMode: 'auto', thr: .16, open: 1, outline: 'cutout', frameW: 0, frameH: .5,
-    channel: 'luma', invert: false, light: 0, wB: .45, sB: 6, wM: .35, sM: 1.8, wF: .20, sF: .5, pLo: 1, pHi: 99.5, gamma: 1, roll: 2.5, terraces: 0,
+    channel: 'luma', invert: false, light: 0, wB: .45, sB: 6, wM: .35, sM: 1.8, wF: .20, sF: .5, pLo: 1, pHi: 99.5, gamma: 1, roll: 2.5, terraces: 0, flat: 'off', flatLvl: .5, flatBoxes: [],
     reachDia: 1.5875, applyReach: false, mirror: false, negative: false,
     mode: 'auto', hLo: 0, hHi: 1, hStretch: false, hSmooth: -1, hCut: .002, hRoll: 0 };   // heightmap mode (hSmooth -1 = auto: more for 8-bit sources)
 
@@ -3960,6 +3965,29 @@ function rgCore() {
     // 6. robust normalisation inside the sign (percentiles), gamma, optional terraces
     const lo = pctl(hh, sign, s.pLo), hi = pctl(hh, sign, s.pHi), span = hi - lo || 1;
     for (let k = 0; k < n; k++) { let v = clamp((hh[k] - lo) / span, 0, 1); if (s.gamma !== 1) v = Math.pow(v, s.gamma); if (s.terraces > 0) v = Math.round(v * s.terraces) / s.terraces; hh[k] = v; }
+    }
+    // 6b. flat floor, so soft shadows in a render can't leave domes and moats in a background that should be flat.
+    // Everywhere: heights below the level are raised to it. Inside boxes drawn on the source image: heights below the level
+    // become one flat floor at the height found just outside the box (so the patch matches its surroundings), blended in over ~1 mm.
+    if (s.flat === 'all') { const f = clamp(+s.flatLvl || 0, 0, 1); step('Flattening the floor…'); for (let k = 0; k < n; k++) if (hh[k] < f) hh[k] = f; }
+    else if (s.flat === 'boxes' && s.flatBoxes && s.flatBoxes.length && job.fr) {
+      step('Flattening the floor in ' + s.flatBoxes.length + ' box' + (s.flatBoxes.length > 1 ? 'es' : '') + '…');
+      const f = clamp(+s.flatLvl || 0, 0, 1), fr = job.fr, fe = .8 / dx, pad = Math.ceil(3 * fe) + 1, ring = Math.max(2, Math.round(4 / dx));
+      for (const b of s.flatBoxes) {
+        const x0 = Math.max(0, Math.floor((b.x - fr.x) / fr.w * gw)), x1 = Math.min(gw, Math.ceil((b.x + b.w - fr.x) / fr.w * gw)),
+          y0 = Math.max(0, Math.floor((b.y - fr.y) / fr.h * gh)), y1 = Math.min(gh, Math.ceil((b.y + b.h - fr.y) / fr.h * gh));
+        if (x1 - x0 < 2 || y1 - y0 < 2) continue;
+        // floor height: median of the low (below-level) heights in a ring just outside the box
+        const lowRing = [];
+        for (let y = Math.max(0, y0 - ring); y < Math.min(gh, y1 + ring); y++) for (let x = Math.max(0, x0 - ring); x < Math.min(gw, x1 + ring); x++) {
+          if (x >= x0 && x < x1 && y >= y0 && y < y1) continue; const k = y * gw + x; if (sign[k] && hh[k] < f) lowRing.push(hh[k]); }
+        let fb = f; if (lowRing.length > 8) { lowRing.sort((a, c) => a - c); fb = lowRing[Math.floor(lowRing.length * .5)]; }
+        // soft-edged weight for this box only (blurred locally)
+        const lx0 = Math.max(0, x0 - pad), ly0 = Math.max(0, y0 - pad), lw = Math.min(gw, x1 + pad) - lx0, lh = Math.min(gh, y1 + pad) - ly0, m = new Float32Array(lw * lh);
+        for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) m[(y - ly0) * lw + x - lx0] = 1;
+        const W = blur(m, lw, lh, fe);
+        for (let y = 0; y < lh; y++) for (let x = 0; x < lw; x++) { const w = W[y * lw + x], k = (y + ly0) * gw + x + lx0; if (w > .001 && hh[k] < f) hh[k] += w * (fb - hh[k]); }
+      }
     }
     // 7. edge roll-off from the Euclidean distance to the outline
     step('Distance transform and edge roll-off…');
@@ -4053,7 +4081,7 @@ window.RG = (() => {
       for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) { const lx = Math.floor((bx - rect.x + (x + .5) * bw / gw) * sc), ly = Math.floor((by - rect.y + (y + .5) * bh / gh) * sc);
         gate[y * gw + x] = lx >= 0 && ly >= 0 && lx < lw && ly < lh ? lm[ly * lw + lx] : 0; } }
     const gr = Math.max(1, Math.ceil(3 * gw / (bw * sc)));
-    return { job: { d, gw, gh, gate, gr, bg, s, dx, t0 }, G, rect: { x: bx, y: by, w: bw, h: bh } };
+    return { job: { d, gw, gh, gate, gr, bg, s, dx, t0, fr: { x: bx, y: by, w: bw, h: bh } }, G, rect: { x: bx, y: by, w: bw, h: bh } };
   }
 
   function prepareHeight(img, hf, rect, s0) {
@@ -4070,7 +4098,7 @@ window.RG = (() => {
     while ((s.widthMM / dx + 1) * (s.widthMM * aspect / dx + 1) > 2.2e6) dx *= 1.1;
     const gw = Math.max(8, Math.round(s.widthMM / dx) + 1), gh = Math.max(8, Math.round((gw - 1) * aspect) + 1);
     const R0 = { x: x0 + bb.x, y: y0 + bb.y, w: bb.w, h: bb.h }, G = pixels(img, R0.x, R0.y, R0.w, R0.h, gw, gh);
-    return { job: { mode: 'height', Fc, Ac, cw, ch, bb, bits: hf.bits, gw, gh, s, dx, t0 }, G, rect: R0 };
+    return { job: { mode: 'height', Fc, Ac, cw, ch, bb, bits: hf.bits, gw, gh, s, dx, t0, fr: R0 }, G, rect: R0 };
   }
   // read a heightmap exactly: PNG (8 or 16 bit, gray / gray+alpha / RGB / RGBA, not interlaced) without the browser's 8-bit, colour-managed path
   async function decodePNG(buf) {
@@ -5335,7 +5363,9 @@ window.RG = (() => {
       ['pLo', 'low percentile', 'num', { step: .5, min: 0, max: 20, unit: '%' }, 'Heights below this percentile (inside the sign) all sit on the slab.'],
       ['pHi', 'high percentile', 'num', { step: .1, min: 80, max: 100, unit: '%' }, 'Heights above this percentile all reach full depth, so a few shiny highlights can’t squash the rest.'],
       ['gamma', 'gamma', 'rng', { min: .4, max: 2.5, step: .05 }, 'Above 1 pushes mid-heights down (crisper peaks); below 1 lifts them (fuller, rounder).'],
-      ['terraces', 'terraces', 'num', { step: 1, min: 0, max: 30, unit: 'levels' }, 'Quantises the height into this many flat levels, for 2.5D or layered carving with a flat endmill. 0 = smooth.']],
+      ['terraces', 'terraces', 'num', { step: 1, min: 0, max: 30, unit: 'levels' }, 'Quantises the height into this many flat levels, for 2.5D or layered carving with a flat endmill. 0 = smooth.'],
+      ['flat', 'flatten floor', 'sel', [['off', 'off'], ['all', 'everywhere'], ['boxes', 'inside boxes I draw']], 'Raises every height below the floor level up to it, so the soft shadows of a render can’t leave bubbles and moats in a background that should be flat. Everywhere is quick but also flattens darker detail; inside boxes changes only the areas you draw on the image in Views, crop and thickness.'],
+      ['flatLvl', 'floor level', 'rng', { min: 0, max: 1, step: .01, pct: true }, 'Heights below this share of the relief depth count as floor. Everywhere: they are raised to this level. Inside boxes: they become one flat floor at the height found just outside each box, so the patch blends in. Raise it until the bubble is gone; anything higher (letters, figures) stays as it is.']],
     hmap: [
       ['hLo', 'black level', 'rng', { min: 0, max: 1, step: .005, pct: true }, 'Gray value that sits on the slab (Z = back slab). Anything darker sits there too. 0% = pure black.'],
       ['hHi', 'white level', 'rng', { min: 0, max: 1, step: .005, pct: true }, 'Gray value that reaches full relief depth. Anything brighter is capped there. 100% = pure white.'],
@@ -5372,7 +5402,7 @@ window.RG = (() => {
     ctl.frameW.inp.closest('.rg-row').classList.toggle('mv-dim', S.outline !== 'rect'); ctl.frameH.inp.closest('.rg-row').classList.toggle('mv-dim', S.outline !== 'rect' || !S.frameW);
     const hm = curMode() === 'height', dim = (keys, on) => keys.forEach(k => ctl[k] && ctl[k].inp.closest('.rg-row').classList.toggle('mv-dim', on));
     dim(['bgMode', 'thr', 'roll', 'channel', 'light', 'wB', 'sB', 'wM', 'sM', 'wF', 'sF', 'pLo', 'pHi'], hm); dim(['hLo', 'hHi', 'hStretch', 'hSmooth', 'hRoll'], !hm);
-    dim(['hLo', 'hHi'], !hm || S.hStretch); dim(['hCut'], !hm || S.outline === 'rect'); hmInfo();
+    dim(['flatLvl'], S.flat === 'off'); if (view) drawSrc(); dim(['hLo', 'hHi'], !hm || S.hStretch); dim(['hCut'], !hm || S.outline === 'rect'); hmInfo();
     const sum = S.wB + S.wM + S.wF; $('#rgMix').textContent = sum ? 'mix: broad ' + Math.round(S.wB / sum * 100) + '% · medium ' + Math.round(S.wM / sum * 100) + '% · fine ' + Math.round(S.wF / sum * 100) + '%' : 'all three weights are 0';
   }
   function heightNow() { const a = aspect(); return a ? S.widthMM * a : 0; }
@@ -5393,7 +5423,7 @@ window.RG = (() => {
     crisp: ['Crisp detail', { wB: .3, wM: .35, wF: .35, sF: .35, gamma: 1.15 }]
   };
   PRESETS.heightmap = ['Heightmap — gray value is height', { mode: 'height' }];
-  const KEEP = ['widthMM', 'base', 'rel', 'margin', 'dx', 'reachDia'];
+  const KEEP = ['widthMM', 'base', 'rel', 'margin', 'dx', 'reachDia', 'flatBoxes'];
   const pSel = $('#rgPreset'); Object.entries(PRESETS).forEach(([k, [t]]) => { const o = document.createElement('option'); o.value = k; o.textContent = t; pSel.append(o); });
   pSel.addEventListener('change', () => { const keep = {}; KEEP.forEach(k => keep[k] = S[k]); Object.assign(S, RG.DEFAULTS, keep, PRESETS[pSel.value][1]); writeAll(); changed(50); });
   $('#rgReset').addEventListener('click', () => { Object.assign(S, RG.DEFAULTS); pSel.value = 'render'; writeAll(); changed(50); });
@@ -5434,7 +5464,7 @@ window.RG = (() => {
     // the first front view across all sources wins; an image added later becomes the front if none yet
     if (!front) { const p = src.panels.find(q => q.role === 'front'); if (p) front = Object.assign({ src }, p); }
     else src.panels.forEach(p => { if (p.role === 'front') p.role = 'ignore'; });
-    manual = null; renderSources(); drawSrc(); estimateThickness(); showVals(); changed(30, true);
+    manual = null; S.flatBoxes = []; renderSources(); drawSrc(); estimateThickness(); showVals(); changed(30, true);
   }
   async function loadSample() { const el = document.getElementById('rgSampleData'); if (!el) return;
     try { const im = await loadImg(el.textContent.trim()); addSource('Jelinek Family sign (sample).jpg', im, null); } catch (e) { status('<span class="mv-warn">Sample failed to load.</span>'); } }
@@ -5463,7 +5493,7 @@ window.RG = (() => {
   function curSrc() { return manual ? manual.src : front ? front.src : null; }
 
   /* ---------- source preview with crop (drag a box to crop by hand) ---------- */
-  const scv = $('#rgSrc'), sctx = scv.getContext('2d'); let view = null;
+  const scv = $('#rgSrc'), sctx = scv.getContext('2d'); var view = null;
   function drawSrc() {
     const s = curSrc(); const boxW = Math.max(200, scv.parentNode.clientWidth || 600);
     if (!s) { scv.width = boxW; scv.height = 60; sctx.fillStyle = '#6a6f78'; sctx.font = '13px DM Sans, sans-serif'; sctx.fillText('No image yet.', 10, 34); view = null; return; }
@@ -5476,18 +5506,35 @@ window.RG = (() => {
     const r = cropRect(); if (r) { sctx.fillStyle = 'rgba(0,0,0,.45)'; const W = scv.width, H = scv.height, x = r.x * view.sc, y = r.y * view.sc, w = r.w * view.sc, h = r.h * view.sc;
       sctx.fillRect(0, 0, W, y); sctx.fillRect(0, y + h, W, H - y - h); sctx.fillRect(0, y, x, h); sctx.fillRect(x + w, y, W - x - w, h); box(r, '#00e5ff', [], 2); }
     if (lastModel && lastModel.rect && curSrc() === lastModel.srcRef) box(lastModel.rect, 'rgba(0,255,136,.9)', [2 * dpr, 3 * dpr], 1);
+    (S.flatBoxes || []).forEach(b => { sctx.fillStyle = S.flat === 'boxes' ? 'rgba(250,56,153,.22)' : 'rgba(250,56,153,.08)'; sctx.fillRect(b.x * view.sc, b.y * view.sc, b.w * view.sc, b.h * view.sc); box(b, '#fa3899', S.flat === 'boxes' ? [] : [3 * dpr, 3 * dpr], 1.5); });
+    if (dragC && dragC.flat && dragC.moved) box(dragC.flat, '#fa3899', [4 * dpr, 3 * dpr], 1.5);
+    flatInfo();
     $('#rgCropInfo').innerHTML = r ? (manual ? '<b>hand crop</b>' : '<b>' + (front && front.whole ? 'whole image' : 'detected front view') + '</b>') + ' · ' + Math.round(r.w) + ' × ' + Math.round(r.h) + ' px from ' + esc(s.name) + (lastModel ? ' · <span class="rg-green">green</span> = sign found inside it' : '') : '';
   }
-  let dragC = null;
+  var dragC = null;
   scv.addEventListener('pointerdown', e => { if (!view) return; const b = scv.getBoundingClientRect(); dragC = { x: (e.clientX - b.left) * view.dpr / view.sc, y: (e.clientY - b.top) * view.dpr / view.sc, moved: false }; scv.setPointerCapture(e.pointerId); });
   scv.addEventListener('pointermove', e => { if (!dragC) return; const b = scv.getBoundingClientRect(), x = (e.clientX - b.left) * view.dpr / view.sc, y = (e.clientY - b.top) * view.dpr / view.sc;
     if (!dragC.moved && Math.hypot(x - dragC.x, y - dragC.y) * view.sc < 6) return; dragC.moved = true;
     const s = view.s, rx = Math.max(0, Math.min(dragC.x, x)), ry = Math.max(0, Math.min(dragC.y, y));
-    manual = { src: s, rect: { x: rx, y: ry, w: Math.min(s.w, Math.max(dragC.x, x)) - rx, h: Math.min(s.h, Math.max(dragC.y, y)) - ry } }; drawSrc(); });
+    const rr = { x: rx, y: ry, w: Math.min(s.w, Math.max(dragC.x, x)) - rx, h: Math.min(s.h, Math.max(dragC.y, y)) - ry };
+    if (dragMode === 'flat') dragC.flat = rr; else manual = { src: s, rect: rr }; drawSrc(); });
   const endC = e => { if (!dragC) return; const d = dragC; dragC = null;
+    if (dragMode === 'flat') {
+      if (d.moved && d.flat && d.flat.w > 3 && d.flat.h > 3) { S.flatBoxes = (S.flatBoxes || []).concat([{ x: Math.round(d.flat.x), y: Math.round(d.flat.y), w: Math.round(d.flat.w), h: Math.round(d.flat.h) }]);
+        if (S.flat !== 'boxes') { S.flat = 'boxes'; writeAll(); } changed(60); }
+      else if (!d.moved) { const i = (S.flatBoxes || []).findIndex(b => d.x >= b.x && d.x <= b.x + b.w && d.y >= b.y && d.y <= b.y + b.h);
+        if (i >= 0) { S.flatBoxes = S.flatBoxes.filter((_, j) => j !== i); changed(60); } }
+      drawSrc(); return; }
     if (!d.moved) { const s = view.s, p = s.panels.find(q => d.x >= q.rect.x && d.x <= q.rect.x + q.rect.w && d.y >= q.rect.y && d.y <= q.rect.y + q.rect.h); if (p && !p.whole) setFront(s, p); return; }
     if (manual && manual.rect.w > 8 && manual.rect.h > 8) changed(30, true); else { manual = null; drawSrc(); } };
   scv.addEventListener('pointerup', endC); scv.addEventListener('pointercancel', endC);
+  var dragMode = 'crop';
+  const setDrag = m => { dragMode = m; $('#rgDragCrop').classList.toggle('on', m === 'crop'); $('#rgDragFlat').classList.toggle('on', m === 'flat'); scv.style.cursor = m === 'flat' ? 'crosshair' : ''; };
+  $('#rgDragCrop').addEventListener('click', () => setDrag('crop'));
+  $('#rgDragFlat').addEventListener('click', () => setDrag('flat'));
+  $('#rgFlatClear').addEventListener('click', () => { if (!(S.flatBoxes || []).length) return; S.flatBoxes = []; drawSrc(); changed(60); });
+  function flatInfo() { const n = (S.flatBoxes || []).length, el = $('#rgFlatInfo'); if (!el) return;
+    el.innerHTML = n ? '<b>' + n + '</b> flatten box' + (n > 1 ? 'es' : '') + (S.flat === 'boxes' ? ' · heights below <b>' + Math.round(S.flatLvl * 100) + '%</b> of the relief depth become flat' : ' · <span class="mv-warn">not used: Flatten floor is ' + S.flat + '</span>') : (S.flat === 'boxes' ? '<span class="mv-warn">no flatten boxes yet</span>' : ''); }
   $('#rgAuto').addEventListener('click', () => { manual = null; drawSrc(); changed(30, true); });
   $('#rgWhole').addEventListener('click', () => { const s = curSrc(); if (!s) return; manual = { src: s, rect: { x: 0, y: 0, w: s.w, h: s.h } }; drawSrc(); changed(30, true); });
   new ResizeObserver(() => drawSrc()).observe(scv.parentNode);
