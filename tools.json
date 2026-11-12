@@ -13,7 +13,7 @@
       "group": "3D relief & CNC",
       "path": "relief-generator/",
       "summary": "Turns a render, photo, height map, or multi-view sheet into a smooth 3D relief for CNC carving, with a live 3D viewer, toolpath preview, tool-reach check, and STL, OBJ, height-map, outline, and contour exports.",
-      "whats_new": "First public copy. Exports download in any browser, no Claude account needed.",
+      "whats_new": "Exports now always use your browser's normal download, and leftover Claude-only code was removed.",
       "updated": "Thu Nov 12, 2026"
     }
   ]
